@@ -7,20 +7,18 @@ import torch
 import random
 import io
 import os
+qwen_config_path = "../Qwen3-0.6B/models--Qwen--Qwen3-0.6B/snapshots/c1899de289a04d12100db370d81485cdf75e47ca"
 
 os.environ["HTTP_PROXY"] = "http://127.0.0.1:7890"
 os.environ["HTTPS_PROXY"] = "http://127.0.0.1:7890"
 
 base_path = os.path.dirname(os.path.abspath(__file__))
 # Tokenizer
-qwen_path = os.path.join(base_path, "..", "Qwen3-0.6B")
-clip_path = os.path.join(base_path, "..", "clip-vit-base-patch16")
-
-
-dataset_Multi_CN = str()
+qwen_path = os.path.join(base_path, qwen_config_path)
+dataset_name = "BelleGroup/multiturn_chat_0.8M"
 
 # 训练中文闲聊能力并不需要图片，所以不需要CLIP的Processor
-class LoRADataset_Multi(dataset):
+class LoRADataset_Multi(Dataset):
     def __init__(
         self,
         qwen_path,
@@ -29,10 +27,13 @@ class LoRADataset_Multi(dataset):
         val_split_ratio=0.05,
     ):
         super().__init__()
-        dataset_name = "BelleGroup/multiturn_chat_0.8M"
         print(f"加载 {split_type} 数据集 ({dataset_name})")
 
-        raw_dataset = load_dataset(dataset_name, split="train", cache_dir=base_path)
+        raw_dataset = load_dataset(dataset_name,
+                                   split="train", 
+                                   cache_dir=base_path,
+                                   download_config=DownloadConfig(resume_download=True),
+        )    
         
         split_dataset = raw_dataset.train_test_split(test_size=val_split_ratio, seed=520)
         # 这里有分train和test的数据集
@@ -58,6 +59,7 @@ class LoRADataset_Multi(dataset):
         full_text = item["instruction"] + item["output"]
         # tokenization
         full_input_ids = self.tokenizer(full_text)["input_ids"]
+        
         
         prompt_text = item["instruction"]
         
@@ -89,4 +91,6 @@ class MTalkDataCollator(DataCollatorForSeq2Seq):
 
 if __name__ == "__main__":
     dataset = LoRADataset_Multi(qwen_path)
-    print(random.choice(dataset))
+    item = random.choice(dataset)
+    print(item['input_ids'])
+    print(item['labels'])
