@@ -60,6 +60,23 @@ class VLM_without_CLIP(PreTrainedModel):
         if config.qwen_frozen:
             for param in self.qwen.parameters():
                 param.requires_grad = False
+                
+        # 加上CLIP模块使得模型可以加载stage1的权重，但再forward中不使用
+        self.clip = AutoModel.from_pretrained(
+            config.clip_path, dtype=config.dtype
+        )
+        self.dense1 = nn.Linear(
+            self.clip.config.vision_config.hidden_size * 4, 
+            self.qwen.config.hidden_size,
+            dtype=config.dtype,
+        )
+        self.dense2 = nn.Linear(
+            self.qwen.config.hidden_size,
+            self.qwen.config.hidden_size,
+            dtype=config.dtype,
+        )
+        for param in self.clip.parameters():
+            param.requires_grad = False
 
     def forward(self, input_ids, labels, attention_mask=None):
         
