@@ -212,3 +212,4 @@ Qwen3-0.6B
 clip-vit-base-patch16
 data/_root_autodl-tmp_llava_LLaVA_CN_Qwen3_data_BelleGroup___multiturn_chat_0.8_m_default_0.0.0_dc32eb8955e10ae1cd4189a50a566ef8f8254a65.lock
 data/BelleGroup___multiturn_chat_0.8_m
+stage2_loss1p8
