@@ -6,12 +6,12 @@ from safetensors.torch import load_file as load_safetensors
 from peft import get_peft_model, LoraConfig, TaskType
 from path_config import qwen_config_path, clip16_config_path
 
-from model import VLM_without_CLIP, VLMConfig
+from model import VLM, VLMConfig
 
 def generate_response():
     
     base_path = os.path.dirname(os.path.abspath(__file__))
-    checkpoint_path = os.path.join(base_path, "stage2_loss1p8", "lora_best_model") 
+    checkpoint_path = os.path.join(base_path, "stage2_loss1p8", "checkpoint-6400") 
     qwen_path = os.path.join(base_path, qwen_config_path)
     clip_path = os.path.join(base_path, clip16_config_path) 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -21,7 +21,7 @@ def generate_response():
     config = VLMConfig(qwen_path=qwen_path, clip_path=clip_path, dtype=torch.bfloat16)
     
     print("加载基础模型结构...")
-    model = VLM_without_CLIP(config)
+    model = VLM(config)
 
     # 加载LoRA微调好的模型
     print("配置并应用LoRA结构...")
