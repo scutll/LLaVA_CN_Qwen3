@@ -190,7 +190,7 @@ def generate_response(mode, k):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="")
     
-    parser.add_argument("--Mode", type=str, choices=["Greedy", "TopkS", "Hybrid"], default="Hybrid", help="token generater mode -Greedy -Top-k_Sampling -Hybrid(default)")
+    parser.add_argument("--Mode", type=str, choices=["Greedy", "TopkS", "Hybrid"], default="Hybrid", help="token generater mode -Greedy -TopkS -Hybrid(default)")
     parser.add_argument("--k", type=int, default=20, help="top-k randomly selection")
     
     args = parser.parse_args()
